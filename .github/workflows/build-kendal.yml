@@ -1,0 +1,30 @@
+name: Build Weatherglass TV (Kendal)
+on: workflow_dispatch
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install SDK parts
+        run: sdkmanager "build-tools;34.0.0" "platforms;android-34"
+      - name: Write config
+        run: |
+          cat > config.properties <<'EOF'
+          latitude=-6.92
+          longitude=110.20
+          city=Kendal
+          tmdb_region=ID
+          language=id
+          temperature=C
+          EOF
+      - name: Build
+        run: chmod +x build.sh && ./build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FreeMyTV
+          path: FreeMyTV.apk
